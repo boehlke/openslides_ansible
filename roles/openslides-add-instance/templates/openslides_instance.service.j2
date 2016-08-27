@@ -1,0 +1,13 @@
+[Unit]
+Description=Presentation and assembly system
+Wants=network.target
+Requires=nginx.service
+Before=nginx.service
+
+[Service]
+ExecStart=TODO: rkt run container
+NonBlocking=true
+User=openslides
+
+[Install]
+WantedBy=multi-user.target

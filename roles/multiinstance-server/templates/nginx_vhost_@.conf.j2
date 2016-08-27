@@ -3,5 +3,5 @@ server {
     listen 0.0.0.0:{{ openslides_nginx_port }};
     listen [::]:{{ openslides_nginx_port }};
 
-    {% include 'nginx_locations.j2' %}
+    {% include '_nginx_locations.j2' %}
 }

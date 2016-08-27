@@ -1,4 +1,4 @@
-worker_processes 1;
+worker_processes 20;
 
 events {
   worker_connections  1024;
@@ -10,9 +10,10 @@ http {
   sendfile on;
   keepalive_timeout 65;
   server {
-    listen 0.0.0.0:{{ openslides_nginx_port }};
-    listen [::]:{{ openslides_nginx_port}};
+    listen 0.0.0.0:80;
+    listen [::]:80;
 
-    {% include 'nginx_locations.j2' %}
   }
+
+  include /srv/nginx/instances.d/*.conf;
 }

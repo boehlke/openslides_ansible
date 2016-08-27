@@ -1,0 +1,13 @@
+---
+- name: Create instance container
+  include: create_container.yml
+
+- name: Initialize database
+  include: init_instance_database.yml
+
+- name: Create systemd units
+  include: create_units.yml
+
+- name: Create nginx configuration
+  include: create_nginx_conf.yml
+

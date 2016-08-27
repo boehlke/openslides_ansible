@@ -1,0 +1,15 @@
+---
+
+- name: Create nginx vhost config
+  when: openslides_nginx_domains
+  become: yes
+  template:
+    dest: "/etc/nginx/sites-enabled/{{ item }}"
+    src: nginx_vhost.conf.j2
+  notify:
+  - Restart nginx
+  with_items: "{{ openslides_nginx_domains }}"
+
+
+TODO: create nginx configuration
+TODO: restart nginx

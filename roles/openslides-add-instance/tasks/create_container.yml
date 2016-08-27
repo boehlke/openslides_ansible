@@ -1,0 +1,9 @@
+---
+TODO: add settings.py
+TODO: create volume directories
+
+- name: Create Settings
+  become: yes
+  template:
+    dest: "{{ openslides_settings_path }}/settings.py"
+    src: settings.py.j2

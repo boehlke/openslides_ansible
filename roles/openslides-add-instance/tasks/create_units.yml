@@ -1,0 +1,39 @@
+---
+- TODO: openslides_instace.service
+- TODO: openslides_instace.socket
+
+- name: Create systemd units for openslides
+  become: yes
+  register: createServices
+  template:
+    dest: /etc/systemd/system/{{ item }}
+    src: "{{ item }}.j2"
+  with_items:
+  - openslides.service
+  - openslides_worker@.service
+  # See https://github.com/andrewgodwin/daphne/issues/17
+  # - openslides.socket
+
+- name: Create nginx service unit for socket activation
+  when: openslides_nginx_socket_activation
+  become: yes
+  register: createNginxService
+  template:
+    dest: /etc/systemd/system/nginx.service
+    src: nginx.service.
+
+- name: Start and enalbe openslides
+  become: yes
+  service:
+    name: openslides.service
+    enabled: yes
+    state: started
+
+- name: Start and enalbe nginx via socket activation
+  when: openslides_nginx_socket_activation
+  become: yes
+  service:
+    name: nginx.socket
+    enabled: yes
+    state: started
+
