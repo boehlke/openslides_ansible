@@ -80,7 +80,7 @@
   command: /var/cache/openslides_repo/node_modules/.bin/gulp
   args:
     chdir: /var/cache/openslides_repo/
-
+  
 - name: Install openslides from repo
   when: openslides_use_git and OpenSlidesGit.changed
   become: yes
@@ -107,6 +107,14 @@
   become: yes
   file:
     path: "{{ openslides_user_data_path }}"
+    state: directory
+    mode: 0755
+    owner: openslides
+
+- name: create user data path
+  become: yes
+  file:
+    path: "{{ log_dir }}"
     state: directory
     mode: 0755
     owner: openslides

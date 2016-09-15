@@ -9,7 +9,7 @@ user=openslides
 command={{ daphne_bin }} openslides.asgi:channel_layer -p {{ openslides_port }}
 stdout_logfile={{ log_dir }}/openslides.out
 stderr_logfile={{ log_dir }}/openslides.err
-directory={{ openslides_dir }}
+directory=/tmp
 
 {% for i in range(openslides_worker_count) %}
 [program:openslides_worker_{{ i }}]

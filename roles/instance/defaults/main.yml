@@ -21,9 +21,6 @@ openslides_user_data_path: /usr/local/lib/openslides
 # only from nginx.
 openslides_port: 8400
 
-# Port on which nginx listens.
-openslides_nginx_port: 80
-
 # Activate nginx via socket activation. Currently this only works with
 # Archlinux.
 openslides_nginx_socket_activation: false
@@ -36,3 +33,5 @@ openslides_use_git: false
 # and the branch which is used.
 openslides_git_repo: https://github.com/OpenSlides/OpenSlides.git
 openslides_git_branch: master
+
+log_dir: /os/logs
