@@ -21,6 +21,7 @@
   - python3-whoosh
   - python3-pypdf2
   - python3-pip
+  - libpq-dev
   - redis-server
   - supervisor
 

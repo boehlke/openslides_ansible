@@ -18,9 +18,6 @@ Role Variables
 --------------
 
 ```yaml
-# You have to set this to a random string. Do not share it.
-openslides_secure_key: false
-
 # The number of worker which should be started. CPU + 1 workers is advised.
 openslides_worker_count: 2
 
@@ -47,7 +44,6 @@ Install openslides from git
   gather_facts: False
 
   vars:
-    openslides_secure_key: MySecureKey  # Secure Key for django. Should be changed
     openslides_nginx_global: yes  # Let openslides listen on any nginx domain
     openslides_use_git: true
 

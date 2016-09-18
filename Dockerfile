@@ -14,6 +14,9 @@ ADD playbook.yml /
 # ==> Executing Ansible (with a simple wrapper)...
 RUN ansible-playbook-wrapper
 
+VOLUME /supervisord.conf
+VOLUME /data
+
 EXPOSE 5000
 
 CMD ["/usr/bin/supervisord", "-n"]

@@ -96,31 +96,32 @@
     executable: "{{ pip_executable }}"
     state: present
 
-- name: Create settings path
+- name: Install postgresql driver via pip
   become: yes
-  file:
-    path: "{{ openslides_settings_path }}"
-    state: directory
-    mode: 0755
+  pip:
+    name: psycopg2
+    executable: "{{ pip_executable }}"
+    state: present
 
-- name: create user data path
-  become: yes
-  file:
-    path: "{{ openslides_user_data_path }}"
-    state: directory
-    mode: 0755
-    owner: openslides
-
-- name: create user data path
-  become: yes
-  file:
-    path: "{{ log_dir }}"
-    state: directory
-    mode: 0755
-    owner: openslides
-
-- name: Create supervisor config
-  become: yes
-  template:
-    dest: "/etc/supervisord.conf"
-    src: supervisord.conf.j2
+#- name: Create settings path
+#  become: yes
+#  file:
+#    path: "{{ openslides_settings_path }}"
+#    state: directory
+#    mode: 0755
+#
+#- name: create user data path
+#  become: yes
+#  file:
+#    path: "{{ openslides_user_data_path }}"
+#    state: directory
+#    mode: 0755
+#    owner: openslides
+#
+#- name: create user data path
+#  become: yes
+#  file:
+#    path: "{{ log_dir }}"
+#    state: directory
+#    mode: 0755
+#    owner: openslides

@@ -5,7 +5,7 @@ Requires=nginx.service
 Before=nginx.service
 
 [Service]
-ExecStart=TODO: rkt run container
+ExecStart=rkt run --insecure-options=image --volume volume-data,kind=host,source=/home/ab/tmp/instance,readOnly=false --volume volume-supervisord-conf,kind=host,source=/home/ab/git/openslides_ansible/supervisord.example.conf sha512-09178ebf257e --user=1000 --group=1000 --exec /usr/bin/supervisord -- -c /supervisord.conf
 NonBlocking=true
 User=openslides
 

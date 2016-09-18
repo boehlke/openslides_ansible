@@ -1,7 +1,4 @@
 ---
-# You have to set this to a random string. Do not share it.
-openslides_secure_key: false
-
 # The number of worker which should be started. CPU + 1 workers is advised.
 openslides_worker_count: 2
 

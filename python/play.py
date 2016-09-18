@@ -2,6 +2,7 @@
 
 import json
 from collections import namedtuple
+from ansible.inventory.host import Host
 
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.inventory import Inventory
@@ -10,6 +11,9 @@ from ansible.playbook.play import Play
 from ansible.plugins.callback import CallbackBase
 from ansible.vars import VariableManager
 
+from ansible import constants as C
+
+C.DEFAULT_ROLES_PATH = ["/home/ab/git/openslides_ansible/roles"]
 
 class ResultCallback(CallbackBase):
     """A sample callback plugin used for performing an action as results come in
@@ -19,21 +23,45 @@ class ResultCallback(CallbackBase):
     or writing your own custom callback plugin
     """
 
+    def v2_runner_item_on_failed(self, result):
+        pass
+
+    def v2_runner_on_failed(self, result, ignore_errors=False):
+        print(json.dumps({result._host.get_name(): result._result}, indent=4))
+        super(ResultCallback, self).v2_runner_on_failed(result, ignore_errors=ignore_errors)
+
+    def v2_runner_on_async_failed(self, result):
+        pass
+
     def v2_runner_on_ok(self, result, **kwargs):
         """Print a json representation of the result
 
         This method could store the result in an instance attribute for retrieval later
         """
         host = result._host
-        print json.dumps({host.name: result._result}, indent=4)
+        print(json.dumps({host.name: result._result}, indent=4))
 
 
 Options = namedtuple('Options',
                      ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check'])
 # initialize needed objects
 variable_manager = VariableManager()
+
+variables = {
+    'openslides_instance_path': '/home/ab/tmp/instance',
+    'openslides_secure_key': 'asdf',
+    'postgresql_user': '',
+    'openslides_instance_db_password': 'asdf',
+    'instance_id': 'asdf',
+    'postgres_host': 'localhost',
+    'postgres_user': 'openslides_admin',
+    'postgres_password': 'asdf'
+}
+
+for key, value in variables.items():
+    variable_manager.set_host_variable(Host(name='localhost'), key, value)
 loader = DataLoader()
-options = Options(connection='local', module_path='/path/to/mymodules', forks=100, become=None, become_method=None,
+options = Options(connection='local', module_path='/path/to/mymodules', forks=100, become=None, become_method='sudo',
                   become_user=None, check=False)
 passwords = dict(vault_pass='secret')
 
@@ -49,9 +77,12 @@ play_source = dict(
     name="Ansible Play",
     hosts='localhost',
     gather_facts='no',
-    tasks=[
-        dict(action=dict(module='shell', args='ls'), register='shell_out'),
-        dict(action=dict(module='debug', args=dict(msg='{{shell_out.stdout}}')))
+    # tasks=[
+    #     dict(action=dict(module='shell', args='ls'), register='shell_out'),
+    #     dict(action=dict(module='debug', args=dict(msg='{{shell_out.stdout}}')))
+    # ]
+    roles=[
+        dict(name="openslides-add-instance", register='shell_out'),
     ]
 )
 play = Play().load(play_source, variable_manager=variable_manager, loader=loader)

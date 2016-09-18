@@ -1,10 +1,10 @@
 galaxy_info:
-  author: Oskar Hahn
-  description: Look for ostcar
+  author: André Böhlke
+  description: ab@bcoding.de
 
   license: MIT
 
-  min_ansible_version: 2.0
+  min_ansible_version: 2.2
 
   platforms:
   - name: Ubuntu

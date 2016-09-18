@@ -5,12 +5,12 @@ TODO: fill in postgresql credentials
 DATABASES = {
   'default': {
       'ENGINE': 'django.db.backends.sqlite3',
-      'NAME': '{{ openslides_user_data_path }}/database.sqlite',
+      'NAME': '/data/database.sqlite',
   }
 }
-MEDIA_ROOT = '{{ openslides_user_data_path }}/media/'
-SEARCH_INDEX = '{{ openslides_user_data_path }}/search_index/'
-STATIC_ROOT = '{{ openslides_user_data_path }}/collected_static/'
+MEDIA_ROOT = '/data/media/'
+SEARCH_INDEX = '/data/search_index/'
+STATIC_ROOT = '/static/'
 
 CHANNEL_LAYERS['default']['BACKEND'] = 'asgi_redis.RedisChannelLayer'
 CHANNEL_LAYERS['default']['CONFIG']['PREFIX'] = 'asgi_redis.RedisChannelLayer'

@@ -1,4 +1,9 @@
 ---
+- name: Check variable openslides_secure_key
+  when: not openslides_secure_key
+  fail:
+    msg: The variable openslides_secure_key is not set.
+
 - name: Create instance container
   include: create_container.yml
 
