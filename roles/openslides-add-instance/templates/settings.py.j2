@@ -1,11 +1,11 @@
 from openslides.global_settings import *
 SECRET_KEY = '{{ openslides_secure_key }}'
 
-TODO: fill in postgresql credentials
+# TODO: fill in postgresql credentials
 DATABASES = {
   'default': {
       'ENGINE': 'django.db.backends.sqlite3',
-      'NAME': '/data/database.sqlite',
+      'NAME': '/data/data/database.sqlite',
   }
 }
 MEDIA_ROOT = '/data/media/'
@@ -13,4 +13,4 @@ SEARCH_INDEX = '/data/search_index/'
 STATIC_ROOT = '/static/'
 
 CHANNEL_LAYERS['default']['BACKEND'] = 'asgi_redis.RedisChannelLayer'
-CHANNEL_LAYERS['default']['CONFIG']['PREFIX'] = 'asgi_redis.RedisChannelLayer'
+CHANNEL_LAYERS['default']['CONFIG']['prefix'] = '{{ openslides_instance_id }}'

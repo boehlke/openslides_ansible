@@ -1,11 +1,9 @@
 ---
 - name: Create nginx vhost config
-  when: openslides_nginx_domains
-  become: yes
+  sudo: yes
+  sudo_user: root
   template:
-    dest: "/etc/nginx/sites-enabled/{{ item }}"
+    dest: "/etc/nginx/locations/{{ item }}"
     src: nginx_instance.conf.j2
-  notify:
-  - Restart nginx
-  with_items: "{{ openslides_nginx_domains }}"
+  with_items: "openslides_{{ openslides_instance_id }}.locations"
 

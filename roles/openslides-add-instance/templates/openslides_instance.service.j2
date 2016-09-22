@@ -1,11 +1,11 @@
 [Unit]
-Description=Presentation and assembly system
+Description=Openslides Instance
 Wants=network.target
 Requires=nginx.service
-Before=nginx.service
+After=nginx.service
 
 [Service]
-ExecStart=rkt run --insecure-options=image --volume volume-data,kind=host,source=/home/ab/tmp/instance,readOnly=false --volume volume-supervisord-conf,kind=host,source=/home/ab/git/openslides_ansible/supervisord.example.conf sha512-09178ebf257e --user=1000 --group=1000 --exec /usr/bin/supervisord -- -c /supervisord.conf
+ExecStart={{ openslides_rkt_base }} supervisord -- -c /supervisord.conf
 NonBlocking=true
 User=openslides
 

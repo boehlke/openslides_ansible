@@ -1,31 +1,39 @@
 ---
 - name: Create systemd units for openslides
-  become: yes
-  register: createServices
+  sudo: yes
+  sudo_user: root
+  register: createInstanceService
   template:
-    dest: /etc/systemd/system/openslides_instance_{{ instance_id }}.service
+    dest: /etc/systemd/system/openslides_instance_{{ openslides_instance_id }}.service
     src: "openslides_instance.service.j2"
 
 - name: Create nginx service unit for socket activation
-  when: openslides_nginx_socket_activation
-  become: yes
-  register: createNginxService
+  sudo: yes
+  sudo_user: root
+  register: createInstanceSocket
   template:
-    dest: /etc/systemd/system/openslides_instance_{{ instance_id }}.socket
-    src: openslides_instance.socket
+    dest: /etc/systemd/system/openslides_instance_{{ openslides_instance_id }}.socket
+    src: "openslides_instance.socket.j2"
+
+- name: Reload systemd units
+  sudo: yes
+  sudo_user: root
+  when: createInstanceService.changed or createInstanceSocket.changed
+  command: systemctl daemon-reload
 
 - name: Start and enalbe openslides
-  become: yes
+  sudo: yes
+  sudo_user: root
   service:
-    name: openslides_instance_{{ instance_id }}.service
+    name: openslides_instance_{{ openslides_instance_id }}.service
     enabled: yes
     state: started
 
 - name: Start and enalbe nginx via socket activation
-  when: openslides_nginx_socket_activation
-  become: yes
+  sudo: yes
+  sudo_user: root
   service:
-    name: openslides_instance_{{ instance_id }}.socket
+    name: openslides_instance_{{ openslides_instance_id }}.socket
     enabled: yes
     state: started
 

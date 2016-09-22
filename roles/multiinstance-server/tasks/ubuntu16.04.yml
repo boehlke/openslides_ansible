@@ -38,24 +38,6 @@
     state: stopped
     enabled: no
 
-- name: Install git and development tools
-  when: openslides_use_git
-  become: yes
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-  - git
-  - npm
-
-- name: Create a symlink from nodejs to node
-  when: openslides_use_git
-  become: yes
-  file:
-    state: link
-    path: /usr/bin/node
-    src: /usr/bin/nodejs
-
 - set_fact:
     pip_executable: pip3
     openslides_distro_fround: true

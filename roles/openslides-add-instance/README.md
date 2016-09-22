@@ -27,10 +27,6 @@ openslides_worker_count: 2
 # If set to true, the global nginx config is rewritten to listen on all hosts.
 openslides_nginx_global: false
 
-# Creates a virtual host which listens to the given names. This is ignored if
-# openslides_nginx_global is set to true.
-openslides_nginx_domains: []
-
 # If set to False the stable version of openslides is installed from pypi. If set
 # to True, then the development version or another git version is used.
 openslides_use_git: false

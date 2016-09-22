@@ -9,3 +9,8 @@
   template:
     dest: "{{ openslides_instance_path }}/settings.py"
     src: settings.py.j2
+
+- name: Create supervisor configuration
+  template:
+    dest: "{{ openslides_instance_path }}/supervisord.conf"
+    src: supervisord.conf.j2

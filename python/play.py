@@ -48,14 +48,23 @@ Options = namedtuple('Options',
 variable_manager = VariableManager()
 
 variables = {
+    'openslides_instance_slug': 'asdf',
     'openslides_instance_path': '/home/ab/tmp/instance',
+    'openslides_rkt_image': 'sha512-94722365233b',
     'openslides_secure_key': 'asdf',
     'postgresql_user': '',
     'openslides_instance_db_password': 'asdf',
-    'instance_id': 'asdf',
+    'openslides_instance_id': 'asdf',
+    'openslides_instance_port': '23232',
     'postgres_host': 'localhost',
     'postgres_user': 'openslides_admin',
-    'postgres_password': 'asdf'
+    'postgres_password': 'asdf',
+    'openslides_instance_event_name': 'asdf',
+    'openslides_instance_event_description': 'asdf',
+    'openslides_instance_event_date': 'asdf',
+    'openslides_instance_event_location': 'asdf',
+    'openslides_instance_event_organizer': 'asdf',
+    'ansible_become_pass': 'Koplax$l'
 }
 
 for key, value in variables.items():

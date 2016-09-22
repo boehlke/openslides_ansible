@@ -4,6 +4,18 @@
   fail:
     msg: The variable openslides_secure_key is not set.
 
+- set_fact:
+    pip_executable: pip
+    openslides_rkt_base: /usr/bin/rkt run
+      --port=8000-tcp:{{ openslides_instance_port }}
+      --insecure-options=image
+      --volume volume-data,kind=host,source={{ openslides_instance_path }},readOnly=false
+      --volume volume-supervisord-conf,kind=host,source={{ openslides_instance_path }}/supervisord.conf
+      {{ openslides_rkt_image }} --user=1000 --group=1000 --exec
+
+- set_fact:
+    openslides_rkt: '{{ openslides_rkt_base }} ./manage.py --'
+
 - name: Create instance container
   include: create_container.yml
 
@@ -16,3 +28,9 @@
 - name: Create nginx configuration
   include: create_nginx_conf.yml
 
+- name: restart nginx
+  sudo: yes
+  sudo_user: root
+  service:
+    name: nginx
+    state: reloaded

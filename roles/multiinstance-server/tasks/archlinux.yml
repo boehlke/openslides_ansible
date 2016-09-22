@@ -21,16 +21,6 @@
     name: nginx
     state: present
 
-- name: Install git and development tools
-  when: openslides_use_git
-  become: yes
-  pacman:
-    name: "{{ item }}"
-    state: present
-  with_items:
-  - git
-  - npm
-
 - set_fact:
     pip_executable: pip
     openslides_distro_fround: true

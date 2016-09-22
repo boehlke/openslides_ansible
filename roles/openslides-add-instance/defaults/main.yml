@@ -1,2 +1,2 @@
 ---
-openslides_settings_path: {{ openslides_instance_path }}
+openslides_settings_path: '{{ openslides_instance_path }}'

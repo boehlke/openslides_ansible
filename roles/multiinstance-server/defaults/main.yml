@@ -28,10 +28,6 @@ openslides_nginx_port: 80
 # Archlinux.
 openslides_nginx_socket_activation: false
 
-# If set to False the stable version of openslides is installed from pypi. If set
-# to True, then the development version or another git version is used.
-openslides_use_git: false
-
 # Only used if openslides_use_git is set to True. Specifies the OpenSlides repo
 # and the branch which is used.
 openslides_git_repo: https://github.com/OpenSlides/OpenSlides.git
