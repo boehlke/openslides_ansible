@@ -1,6 +1,5 @@
 flask
 pydbus
-ansible
 cached_property
-py-jsonapi==0.3.2b0
-url2
+py-jsonapi
+

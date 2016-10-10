@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
 import json
+import random
+import string
 from collections import namedtuple
+from optparse import OptionParser
+
 from ansible.inventory.host import Host
 
 from ansible.executor.task_queue_manager import TaskQueueManager
@@ -42,33 +46,51 @@ class ResultCallback(CallbackBase):
         print(json.dumps({host.name: result._result}, indent=4))
 
 
+parser = OptionParser()
+parser.add_option("-i", "--instance-file", dest="instance_file",
+                  help="instance file container instance data", metavar="INSTANCE_FILE")
+parser.add_option("-p", "--sudo-password", dest="sudo_password",
+                  help="sudo password required to sudo in ansible script", metavar="SUDO_PASSWORD")
+
+(options, args) = parser.parse_args()
+
+# read instance data
+
+with open(options.instance_file, 'r') as fh:
+    instance_data = json.load(fh)
+
 Options = namedtuple('Options',
                      ['connection', 'module_path', 'forks', 'become', 'become_method', 'become_user', 'check'])
 # initialize needed objects
 variable_manager = VariableManager()
 
 variables = {
-    'openslides_instance_slug': 'asdf',
-    'openslides_instance_path': '/home/ab/tmp/instance',
     'openslides_rkt_image': 'sha512-94722365233b',
-    'openslides_secure_key': 'asdf',
+    'openslides_secure_key': ''.join([random.SystemRandom().choice("{}{}".format(string.ascii_letters, string.digits)) for i in range(50)]),
     'postgresql_user': '',
     'openslides_instance_db_password': 'asdf',
-    'openslides_instance_id': 'asdf',
     'openslides_instance_port': '23232',
     'postgres_host': 'localhost',
     'postgres_user': 'openslides_admin',
     'postgres_password': 'asdf',
-    'openslides_instance_event_name': 'asdf',
-    'openslides_instance_event_description': 'asdf',
-    'openslides_instance_event_date': 'asdf',
-    'openslides_instance_event_location': 'asdf',
-    'openslides_instance_event_organizer': 'asdf',
-    'ansible_become_pass': 'Koplax$l'
+    # 'openslides_instance_id': 'asdf',
+    # 'openslides_instance_event_name': 'asdf',
+    # 'openslides_instance_event_description': 'asdf',
+    # 'openslides_instance_event_date': 'asdf',
+    # 'openslides_instance_event_location': 'asdf',
+    # 'openslides_instance_event_organizer': 'asdf',
+    # 'openslides_instance_slug': 'asdf',
+    'ansible_become_pass': options.sudo_password
 }
+
+for instance_var in instance_data.keys():
+    variables['openslides_instance_' + instance_var] = instance_data[instance_var]
+
+variables['openslides_instance_path'] = '/home/ab/tmp/' + variables['openslides_instance_slug']
 
 for key, value in variables.items():
     variable_manager.set_host_variable(Host(name='localhost'), key, value)
+
 loader = DataLoader()
 options = Options(connection='local', module_path='/path/to/mymodules', forks=100, become=None, become_method='sudo',
                   become_user=None, check=False)

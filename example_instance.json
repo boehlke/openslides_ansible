@@ -1,0 +1,28 @@
+{
+  "data":
+    {
+      "type": "instances",
+      "attributes": {
+        "slug": "example",
+        "parent_domain": "openslides.de",
+        "name": "Example Instance",
+        "admin_first_name": "Donald",
+        "admin_last_name": "Trumpet",
+        "admin_initial_password": "trump",
+        "event_name": "Awesomeness Convension",
+        "event_description": "...",
+        "event_date": "2016-11-11",
+        "event_location": "NYC",
+        "event_organizer": "Secret"
+      },
+      "relationships": {
+        "osversion": {
+          "data": {
+            "type": "version",
+            "id": "2.1"
+          }
+        }
+      }
+    }
+
+}

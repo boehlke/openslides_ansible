@@ -7,16 +7,20 @@ class SimpleApiObject:
         self.data = kwargs
 
 
-class OpenSlidesVersion(SimpleApiObject):
-    name = ObjectIDAttribute("name")
+class Version(SimpleApiObject):
+    type = 'version'
+    id = ObjectIDAttribute("id")
     image = ObjectAttribute("image")
 
 
 class Instance(SimpleApiObject):
+    type = 'instance'
     id = ObjectIDAttribute("id")
     slug = ObjectAttribute("slug")
     parent_domain = ObjectAttribute("parent_domain")
     name = ObjectAttribute("name")
+
+    created_date = ObjectAttribute("created_date")
 
     osversion = ToOneRelationship("osversion")
 
