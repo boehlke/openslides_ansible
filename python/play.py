@@ -5,6 +5,7 @@ import random
 import string
 from collections import namedtuple
 from optparse import OptionParser
+from os import path
 
 from ansible.inventory.host import Host
 
@@ -17,7 +18,7 @@ from ansible.vars import VariableManager
 
 from ansible import constants as C
 
-C.DEFAULT_ROLES_PATH = ["/home/ab/git/openslides_ansible/roles"]
+C.DEFAULT_ROLES_PATH = [path.join(path.dirname(path.abspath(__file__)), '../roles')]
 
 class ResultCallback(CallbackBase):
     """A sample callback plugin used for performing an action as results come in
@@ -49,14 +50,18 @@ class ResultCallback(CallbackBase):
 parser = OptionParser()
 parser.add_option("-i", "--instance-file", dest="instance_file",
                   help="instance file container instance data", metavar="INSTANCE_FILE")
+parser.add_option("-f", "--force", dest="force", action="store_true",
+                  help="forces execution even if instance was created already", default=False)
+parser.add_option("-d", "--instances-dir", dest="instances_dir",
+                  help="directory containing instance data", metavar="INSTANCES_DIR")
 parser.add_option("-p", "--sudo-password", dest="sudo_password",
                   help="sudo password required to sudo in ansible script", metavar="SUDO_PASSWORD")
 
 (options, args) = parser.parse_args()
 
 # read instance data
-
-with open(options.instance_file, 'r') as fh:
+instance_file = options.instance_file
+with open(instance_file, 'r') as fh:
     instance_data = json.load(fh)
 
 Options = namedtuple('Options',
@@ -64,12 +69,20 @@ Options = namedtuple('Options',
 # initialize needed objects
 variable_manager = VariableManager()
 
+
+def random_string(length):
+    return ''.join(
+        [random.SystemRandom().choice("{}{}".format(string.ascii_letters, string.digits)) for i in range(length)])
+
+
+instance_number = instance_data['number']
 variables = {
     'openslides_rkt_image': 'sha512-94722365233b',
-    'openslides_secure_key': ''.join([random.SystemRandom().choice("{}{}".format(string.ascii_letters, string.digits)) for i in range(50)]),
-    'postgresql_user': '',
-    'openslides_instance_db_password': 'asdf',
-    'openslides_instance_port': '23232',
+    'openslides_static_path': '/home/ab/git/OpenSlides/collected-static',
+    'openslides_secure_key': random_string(50),
+    'openslides_instance_db_password': random_string(12),
+    'openslides_instance_systemd_port': str(23232 + instance_number * 2),
+    'openslides_instance_port': str(23232 + (instance_number*2+1)),
     'postgres_host': 'localhost',
     'postgres_user': 'openslides_admin',
     'postgres_password': 'asdf',
@@ -86,7 +99,14 @@ variables = {
 for instance_var in instance_data.keys():
     variables['openslides_instance_' + instance_var] = instance_data[instance_var]
 
-variables['openslides_instance_path'] = '/home/ab/tmp/' + variables['openslides_instance_slug']
+
+# check if instance if already created
+instance_path = path.join(options.instances_dir, variables['openslides_instance_slug'])
+
+if path.exists(instance_path) and not options.force:
+    raise Exception("instance already created")
+
+variables['openslides_instance_path'] = instance_path
 
 for key, value in variables.items():
     variable_manager.set_host_variable(Host(name='localhost'), key, value)

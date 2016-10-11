@@ -60,7 +60,7 @@ class Session(jsonapi.base.database.Session):
 
                 number = last_number + 1
                 with open(journal_file, 'a') as fh:
-                    fh.write(str(number) + ';' + instance_id)
+                    fh.write(str(number) + ';' + instance_id + "\n")
 
                 resource.data['id'] = instance_id
                 f = open(os.path.join(instance_meta_dir, "openslides_instance_" + instance_id + '.json'), "w")
