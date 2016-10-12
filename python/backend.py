@@ -1,11 +1,11 @@
 import copy
 import os
 import re
+import subprocess
 import uuid
 import json
 from datetime import datetime
 from time import strftime
-
 from flask import Flask
 from multiinstance.listing import InstanceListing, VersionListing
 from multiinstance.models import Instance, OsVersion
@@ -19,8 +19,13 @@ parser.add_option("-i", "--instance-meta-dir", dest="instance_meta_dir",
 parser.add_option("--versions-meta-dir", dest="versions_meta_dir",
                   help="[REQUIRED] directory containing version meta files",
                   metavar="VERSIONS_META_DIR")
+parser.add_option("-d", "--instances-dir", dest="instances_dir",
+                  help="[REQUIRED] directory containing instance data", metavar="INSTANCES_DIR")
+parser.add_option("-p", "--sudo-password", dest="sudo_password",
+                  help="[REQUIRED] sudo password required to sudo in ansible script", metavar="SUDO_PASSWORD")
 
 (options, args) = parser.parse_args()
+
 
 def checkRequiredArguments(opts, parser):
     missing_options = []
@@ -29,6 +34,7 @@ def checkRequiredArguments(opts, parser):
             missing_options.extend(opt._long_opts)
     if len(missing_options) > 0:
         parser.error('Missing REQUIRED parameters: ' + str(missing_options))
+
 
 checkRequiredArguments(options, parser)
 instance_meta_dir = options.instance_meta_dir
@@ -73,7 +79,8 @@ class Session(jsonapi.base.database.Session):
                     fh.write(str(number) + ';' + instance_id + "\n")
 
                 resource.data['id'] = instance_id
-                f = open(os.path.join(instance_meta_dir, "openslides_instance_" + instance_id + '.json'), "w")
+                instance_filename = os.path.join(instance_meta_dir, "openslides_instance_" + instance_id + '.json')
+                f = open(instance_filename, "w")
                 data = copy.copy(resource.data)
                 data['image'] = data['osversion'].data['image']
                 data['osversion'] = data['osversion'].data['id']
@@ -81,6 +88,12 @@ class Session(jsonapi.base.database.Session):
                 data['created_date'] = now.strftime('%Y-%m-%d')
                 f.write(json.dumps(data, indent=4))
                 f.close()
+                mydir = os.path.dirname(os.path.abspath(__file__))
+                subprocess.call(['/home/ab/.virtualenvs/ansible/bin/python',
+                                 os.path.join(mydir, 'play.py'),
+                                 '--instances-dir', options.instances_dir,
+                                 '--sudo-password', options.sudo_password,
+                                 '--instance-file', instance_filename])
 
     def get(self, identifier, required=False):
         if identifier[0] == 'osversions':

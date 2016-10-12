@@ -20,6 +20,8 @@ class Instance(SimpleApiObject):
     slug = ObjectAttribute("slug")
     url = ObjectAttribute("url")
     parent_domain = ObjectAttribute("parent_domain")
+    mode = ObjectAttribute("mode")
+    db = ObjectAttribute("db")
 
     created_date = ObjectAttribute("created_date")
 

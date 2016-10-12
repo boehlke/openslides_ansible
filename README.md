@@ -20,8 +20,8 @@ pip install -r python/requirements-play.txt
 
 - Install rkt
 
-# sudo aptitude install postgresql nginx
-# sudo mkdir /etc/nginx/locations
+# sudo aptitude install postgresql nginx redis-server
+# sudo mkdir /etc/nginx/openslides
 
 *** Add admin user in postgresql ***
 CREATE USER openslides_admin WITH PASSWORD 'asdf';
@@ -29,16 +29,26 @@ ALTER USER openslides_admin WITH SUPERUSER;
 
 *** Add generated locations to nginx ***
 
--> include /etc/nginx/locations/*.locations;
+-> Add 'include /etc/nginx/openslides/*.locations;' in a vhost config of your choice
+-> Add 'include /etc/nginx/openslides/*.conf;' in main nginx.conf
 
+*** Configure redis to listen to rkt netword ***
+
+- in /etc/redis/redis.conf: bind 127.0.0.1 172.16.28.1
+- in /etc/postgresql/.../postgresql.conf: listen_addresses = 'localhost,172.16.28.1'
+- in /etc/postgresql/.../pg_hba.conf: host  all  all 172.16.28.0/24 md5
 
 ** Add OpenSlides version **
 
-1. get docker image rkt --insecure-options=image fetch docker://openslides/openslides#2.1
-2. copy sha512 hash
+1. get docker image: sudo rkt --insecure-options=image fetch docker://openslides/openslides
+2. copy sha512 hash shown by rkt fetch
 3. create file for version, e.g. /srv/multi-instance/meta/openslides_version_2_1.json
 {
   "id": "2.1",
-  "image": "sha512-<<HASH FOR STEP 2>>"
+  "image": "sha512-<<HASH FOR STEP 2>>",
+  "default": true|false
 }
-4. copy static files in /srv/openslides/static/2.1
+
+If rkt messed up for networking:
+
+sudo rkt gc --grace-period=0

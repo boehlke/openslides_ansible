@@ -5,6 +5,9 @@
 - name: Creates data directory
   file: path="{{ openslides_instance_path }}/data" state=directory
 
+- set_fact:
+    setting_db_template: 'settings_db_{{ openslides_instance_db }}.j2'
+
 - name: Create Settings
   template:
     dest: "{{ openslides_instance_path }}/settings.py"
