@@ -2,23 +2,23 @@
 
 import json
 import random
+import re
 import string
 from collections import namedtuple
 from optparse import OptionParser
 from os import path
 
-from ansible.inventory.host import Host
-
+from ansible import constants as C
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.inventory import Inventory
+from ansible.inventory.host import Host
 from ansible.parsing.dataloader import DataLoader
 from ansible.playbook.play import Play
 from ansible.plugins.callback import CallbackBase
 from ansible.vars import VariableManager
 
-from ansible import constants as C
-
 C.DEFAULT_ROLES_PATH = [path.join(path.dirname(path.abspath(__file__)), '../roles')]
+
 
 class ResultCallback(CallbackBase):
     """A sample callback plugin used for performing an action as results come in
@@ -49,15 +49,25 @@ class ResultCallback(CallbackBase):
 
 parser = OptionParser()
 parser.add_option("-i", "--instance-file", dest="instance_file",
-                  help="instance file container instance data", metavar="INSTANCE_FILE")
+                  help="[REQUIRED] instance file container instance data", metavar="INSTANCE_FILE")
 parser.add_option("-f", "--force", dest="force", action="store_true",
                   help="forces execution even if instance was created already", default=False)
 parser.add_option("-d", "--instances-dir", dest="instances_dir",
-                  help="directory containing instance data", metavar="INSTANCES_DIR")
+                  help="[REQUIRED] directory containing instance data", metavar="INSTANCES_DIR")
 parser.add_option("-p", "--sudo-password", dest="sudo_password",
-                  help="sudo password required to sudo in ansible script", metavar="SUDO_PASSWORD")
+                  help="[REQUIRED] sudo password required to sudo in ansible script", metavar="SUDO_PASSWORD")
 
 (options, args) = parser.parse_args()
+
+def checkRequiredArguments(opts, parser):
+    missing_options = []
+    for opt in parser.option_list:
+        if re.match(r'^\[REQUIRED\]', opt.help) and eval('opts.' + opt.dest) == None:
+            missing_options.extend(opt._long_opts)
+    if len(missing_options) > 0:
+        parser.error('Missing REQUIRED parameters: ' + str(missing_options))
+
+checkRequiredArguments(options, parser)
 
 # read instance data
 instance_file = options.instance_file
@@ -77,12 +87,11 @@ def random_string(length):
 
 instance_number = instance_data['number']
 variables = {
-    'openslides_rkt_image': 'sha512-94722365233b',
     'openslides_static_path': '/home/ab/git/OpenSlides/collected-static',
     'openslides_secure_key': random_string(50),
     'openslides_instance_db_password': random_string(12),
     'openslides_instance_systemd_port': str(23232 + instance_number * 2),
-    'openslides_instance_port': str(23232 + (instance_number*2+1)),
+    'openslides_instance_port': str(23232 + (instance_number * 2 + 1)),
     'postgres_host': 'localhost',
     'postgres_user': 'openslides_admin',
     'postgres_password': 'asdf',
@@ -98,7 +107,6 @@ variables = {
 
 for instance_var in instance_data.keys():
     variables['openslides_instance_' + instance_var] = instance_data[instance_var]
-
 
 # check if instance if already created
 instance_path = path.join(options.instances_dir, variables['openslides_instance_slug'])

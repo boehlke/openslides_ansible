@@ -7,3 +7,9 @@
     src: nginx_instance.conf.j2
   with_items: "openslides_{{ openslides_instance_id }}.locations"
 
+- name: Reload nginx
+  sudo: yes
+  sudo_user: root
+  service:
+    name: nginx
+    state: reloaded

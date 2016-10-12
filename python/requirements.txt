@@ -1,5 +1,5 @@
 flask
 pydbus
 cached_property
-py-jsonapi
+py-jsonapi==0.3.2b0
 

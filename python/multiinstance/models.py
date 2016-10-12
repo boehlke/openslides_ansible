@@ -1,4 +1,4 @@
-from python.multiinstance.schema import ToOneRelationship
+from .schema import ToOneRelationship
 from .schema import ObjectIDAttribute, ObjectAttribute, ParentIDAttribute
 
 
@@ -7,18 +7,19 @@ class SimpleApiObject:
         self.data = kwargs
 
 
-class Version(SimpleApiObject):
-    type = 'version'
+class OsVersion(SimpleApiObject):
+    type = 'osversions'
     id = ObjectIDAttribute("id")
     image = ObjectAttribute("image")
+    default = ObjectAttribute("default")
 
 
 class Instance(SimpleApiObject):
-    type = 'instance'
+    type = 'instances'
     id = ObjectIDAttribute("id")
     slug = ObjectAttribute("slug")
+    url = ObjectAttribute("url")
     parent_domain = ObjectAttribute("parent_domain")
-    name = ObjectAttribute("name")
 
     created_date = ObjectAttribute("created_date")
 
@@ -35,3 +36,5 @@ class Instance(SimpleApiObject):
     event_date = ObjectAttribute("event_date")
     event_location = ObjectAttribute("event_location")
     event_organizer = ObjectAttribute("event_organizer")
+
+    state = ObjectAttribute("state")

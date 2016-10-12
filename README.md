@@ -1,9 +1,10 @@
 
 ** DEPS for backend.py **
 
-sudo apt-get install libpq-dev python-dev libffi-dev
-
-pip install -r python/requirements.txt
+# sudo apt-get install libpq-dev python-dev libffi-dev python3-gi
+-> Create virtualenv with system-packages (e.g. mkvirtualenv backend --system-site-packages -p /usr/bin/python3). This is required for pydbus
+# pip install  cached_property
+# pip install -r python/requirements.txt
 
 ** DEPS for play.py **
 pip install -r python/requirements-play.txt
@@ -16,6 +17,8 @@ pip install -r python/requirements-play.txt
 
 
 ** Host System Setup **
+
+- Install rkt
 
 # sudo aptitude install postgresql nginx
 # sudo mkdir /etc/nginx/locations

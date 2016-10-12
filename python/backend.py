@@ -1,5 +1,6 @@
 import copy
 import os
+import re
 import uuid
 import json
 from datetime import datetime
@@ -7,20 +8,29 @@ from time import strftime
 
 from flask import Flask
 from multiinstance.listing import InstanceListing, VersionListing
-from multiinstance.models import Instance, Version
+from multiinstance.models import Instance, OsVersion
 import jsonapi.flask
 from jsonapi.base.schema import Schema
 from optparse import OptionParser
 
 parser = OptionParser()
 parser.add_option("-i", "--instance-meta-dir", dest="instance_meta_dir",
-                  help="directory containing instance meta files", metavar="INSTANCE_META_DIR")
+                  help="[REQUIRED] directory containing instance meta files", metavar="INSTANCE_META_DIR")
 parser.add_option("--versions-meta-dir", dest="versions_meta_dir",
-                  help="directory containing version meta files",
+                  help="[REQUIRED] directory containing version meta files",
                   metavar="VERSIONS_META_DIR")
 
 (options, args) = parser.parse_args()
 
+def checkRequiredArguments(opts, parser):
+    missing_options = []
+    for opt in parser.option_list:
+        if re.match(r'^\[REQUIRED\]', opt.help) and eval('opts.' + opt.dest) == None:
+            missing_options.extend(opt._long_opts)
+    if len(missing_options) > 0:
+        parser.error('Missing REQUIRED parameters: ' + str(missing_options))
+
+checkRequiredArguments(options, parser)
 instance_meta_dir = options.instance_meta_dir
 versions_meta_dir = options.versions_meta_dir
 
@@ -65,6 +75,7 @@ class Session(jsonapi.base.database.Session):
                 resource.data['id'] = instance_id
                 f = open(os.path.join(instance_meta_dir, "openslides_instance_" + instance_id + '.json'), "w")
                 data = copy.copy(resource.data)
+                data['image'] = data['osversion'].data['image']
                 data['osversion'] = data['osversion'].data['id']
                 data['number'] = number
                 data['created_date'] = now.strftime('%Y-%m-%d')
@@ -72,14 +83,14 @@ class Session(jsonapi.base.database.Session):
                 f.close()
 
     def get(self, identifier, required=False):
-        if identifier[0] == 'version':
+        if identifier[0] == 'osversions':
             return self.versions.get_by_id(identifier[1])
         pass
 
     def query(self, typename, *, sorting=None, limit=None, offset=None, filters=None, order=None):
         if typename == 'instances':
             return self.instances.get()
-        elif typename == 'versions':
+        elif typename == 'osversions':
             return VersionListing(versions_meta_dir).get()
         pass
 
@@ -93,7 +104,7 @@ app = Flask(__name__)
 api = jsonapi.flask.FlaskAPI("/api", db=Database(), flask_app=app)
 
 api.add_type(Schema(Instance, typename='instances'))
-api.add_type(Schema(Version, typename='versions'))
+api.add_type(Schema(OsVersion, typename='osversions'))
 
 # @app.route("/instances")
 # def instances():

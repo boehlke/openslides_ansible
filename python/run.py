@@ -24,4 +24,4 @@ stats = runner.run()
 
 # Maybe do something with stats here? If you want!
 
-print stats
+print(stats)

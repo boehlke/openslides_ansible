@@ -1,4 +1,3 @@
-from pydbus import SystemBus
 from multiinstance.listing import InstanceListing
 from multiinstance.systemd import Systemd
 

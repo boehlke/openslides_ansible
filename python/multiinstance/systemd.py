@@ -13,15 +13,14 @@ class Systemd:
         systemd = bus.get(".systemd1")
         manager = systemd.GetAll('org.freedesktop.systemd1.Manager')
 
-        states = {}
+        states = []
 
         for unit in systemd.ListUnits():
             (name, _, loaded, state, mounted, _, user_id, _, _, _) = unit
-            if not name.startswith('openslides_instance'):
-                continue
-            states[name[len('openslides_instance'):]] = {
+            states.append({
                 'state': state,
-                'loaded': loaded
-            }
+                'loaded': loaded,
+                'name': name
+            })
 
         return states

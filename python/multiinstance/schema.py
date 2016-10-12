@@ -20,6 +20,11 @@ class ToOneRelationship(jsonapi.base.schema.ToOneRelationship):
 
 
 class ObjectAttribute(jsonapi.base.schema.Attribute):
+
+    def __init__(self, *args, **kwargs):
+        self.required = kwargs.get('required', False)
+        super(ObjectAttribute, self).__init__(*args, **kwargs)
+
     def get(self, resource):
         return resource.data.get(self.name)
 
